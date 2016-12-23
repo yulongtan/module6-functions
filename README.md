@@ -1,7 +1,6 @@
 # Module 6: Introduction to Functions
 
-## Overview
-In this module, we'll explore three different approaches to using more advanced capabilities in R. After considering a function in an abstract sense, we'll dive into using built-in R functions, loading R packages, and writing our own functions. Note, you may need to learn a bit about vectors from [module-7](https://github.com/INFO-201/m7-vectors) to understand some of the functions described below.
+In this module, we'll explore how to use **functions** in R to perform advanced capabilities and actually ask questions about data. After considering a function in an abstract sense, we'll look at using built-in R functions, accessing additional functions by loading R packages, and writing our own functions.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
@@ -22,92 +21,159 @@ In this module, we'll explore three different approaches to using more advanced 
 - [User Defined R Functions](http://www.statmethods.net/management/userfunctions.html)
 
 ## What are functions?
-In a broad sense, a **function** is a task that you may want to perform one or more times throughout a program. They provide a way of encapsulating multiple instructions into an aggregate capability that is useful in a variety of different contexts. Depending on the function (and the programming language), functions may have a varying number of **inputs** and **outputs**.
+In a broad sense, a **function** is a named sequence of instructions (lines of code) that you may want to perform one or more times throughout a program. They provide a way of _encapsulating_ multiple instructions into a single "unit" that can be used in a variety of different contexts. So rather than needing to repeatedly write down all the individual instructions for "make a sandwich" every time you're hungry, you can define a `MakeSandwich()` function once and then just **call** (execute) that function when you want to perform those steps.
 
-Let's imagine a function (a series of lines of code) that could determine the largest number in a set of numbers. That function's **input** would be the set of numbers, and the **output** would be the largest number. In R, a function only outputs a single-object (i.e., variable), though that object may be of any type (more on this later). R functions are just like other object (variables) in R, and are referenced by name. As in many programming languages, the function is executed by placing function inputs (also referred to as **arguments** or **parameters**) inside parentheses following the function name:
+In addition to grouping instructions, functions in programming languages like R also tend to follow the mathematical definition of functions, which is a set of operations (instructions!) that are performed on some **inputs** and lead to some **outputs**. Functions inputs are called **arguments** or **parameters**, and we say that these arguments are **passed** to a function (like a football). We say that a function then **returns** an ouput for us to use.
+
+### R Function Syntax
+R functions are referred to by name (technically they are values like any other variable). As in many programming languages, we **call** a function by writing the name of the function followed immediately (no space) by parentheses `()`. Inside the parentheses, we put the **arguments** (inputs) to the function separated by commas. Thus computer functions look just like mathematical functions, but with names longer than `f()`.
 
 ```r
-# Execute the `min` function to determine the minimum number of 10, 3, and 7/5
-min(1, 8/6, 7/5)  # 1
+# call the print() function, pass it "Hello world" value as an argument
+print("Hello world")  # "Hello world"
+
+# call the sqrt() function, passing it 25 as an argument
+sqrt(25)  # 5, square root of 25
+
+# call the min() function, pass it 1, 6/8, AND 4/3 as arguments
+# this is an example of a function that takes multiple args
+min(1, 6/8, 4/3)  # 0.75, (6/8 is the smallest value)
+```
+
+  - _Note:_ To keep functions and variables distinct, I try to always include empty parentheses `()` when referring to a function name. This does not mean that the function takes no parameters, it is just a useful shorthand for indicating that something is a function.
+
+If you call any of these functions interactively, R will display the **returned value** (the output) in the console. However, the computer is not able to "read" what is written out in the console&mdash;that's for humans to view! If we want the computer to be able to _use_ a returned value, we will need to give that value a name so that the computer can refer to it. That is, we need to store the returned value in a variable:
+
+```r
+# store min value in smallest.number variable
+smallest.number <- min(1, 6/8, 4/3)
+
+# we can then use the variable as normal, such as for a comparison
+min.is.big <- smallest.number > 1  # FALSE
+
+# we can also use functions directly when storing to variables
+phi <- .5 + sqrt(5)/2  # 1.618...
+
+# we can even pass the result of a function as a parameter to another!
+# watch out for where the parentheses close!
+print(min(1.5, sqrt(3)))  # prints 1.5
 ```
 
 ## Built-in R Functions
-The R software program comes with a number of functions built into the language. In the example above, we used the `min` function to determine which number was smallest. Each argument to that function was a number, and the output was the smallest number (`1`). Here's a _very_ small table of functions to experiment with:
+As you may have noticed, R comes with a large number of functions that are built into the language. In the above example, we used the `print()` function to print a value to the console, the `min()` function to find the smallest number among the arguments, and the `sqrt()` function to take the square root of a number. Here is a _very_ limited list of functions you can experiment with (or see a few more [here](http://www.statmethods.net/management/functions.html)).
 
-| Function Name  | Description | Example |
-| ------------- | ------------- |  ------------- |
-| `c(a,b, ...)`       | Concatenate multiple items into a vector | `c(1,2)` # returns 1,2 |
-| `length(a)`  | Determine vector length | `length(c(1,2))` # returns 2 |
-| `paste(a, b, ...)`  | Concatenate characters into one value | `paste("Hi", "there")` # returns "hi there" |
-| `length(a)`  | Determine vector length | `length(c(1,2))` # returns 2 |
-| `seq(a, b)`  | Return a sequence from a to b  | `seq(1,5)` # returns 1, 2, 3, 4, 5 |
-| `sum(a, b, ...)`  | Calculates the sum of all input values  | `sum(1,5)` # returns 6|
-| `tolower(a)`  | Returns the characters in lowercase  | `tolower("Hi there")` # returns "hi there"|
+| Function Name | Description | Example |
+| --- | --- |  --- |
+| `sum(a,b,...)`  | Calculates the sum of all input values  | `sum(1, 5)` returns `6`|
+| `round(x,digits)` | Rounds the first parameter to the given number of digts | `round(3.1415, 3)` returns `3.142` |
+| `toupper(str)`  | Returns the characters in lowercase  | `tolower("hi there")` returns `"HI THERE"` |
+| `paste(a,b,...)` | _Concatenate_ (combine) characters into one value | `paste("hi", "there")` returns `"hi there"` |
+| `nchar(str)` | Counts the number of characters in a string | `nchar("hi there")` returns `8` (space is a character!) |
+| `c(a,b,...)` | _Concatenate_ (combine) multiple items into a _vector_ (see [module-7](https://github.com/info201-w17/module7-vectors)) | `c(1, 2)` returns `1, 2` |
+| `seq(a,b)`  | Return a sequence of numbers from a to b  | `seq(1, 5)` returns `1, 2, 3, 4, 5` |
 
-To learn about function inputs/outputs, see the documentation of that function by entering `?FunctionName` into your RStudio console.
+To learn more about any individual function, look them up in the R documentation by using running the `?FunctionName` account as described in the last module:
+
+> You can also look up help by using the `help()` function (e.g., `help(print)` will look up information on the `print()` function, just like `?print` does). There is also an `example()` function you can call to see examples of a function in action (e.g., `example(print)`). This will be more important in the next module!
+
+**Important** "Knowing" how to program in a language is to some extent simply "knowing" what provided functions are available in that language. Thus you should look around and become familiar with this functions... but _do not_ feel that you need to memorize them! It's enough to simply be aware "oh yeah, there was a function that sums up numbers", and then be able to look up the name and argument for that function.
+
 
 ## Loading Functions
-**Packages** are additional sets of R functions that are written and published by the R community. Because many R users encounter the same data management / data analysis challenges, programmers are able to benefit from the work of others (this is the amazing thing about the open-source community). R packages **do not** ship with the R software by default, and need to be downloaded (once) and loaded into your program each time you with to use them. While this may seem cumbersome, the R program would be huge if you had to download _all_ packages to install it.
+Although R comes with lots of built-in functions, you can always use more functions. **Packages** are additional sets of R functions that are written and published by the R community. Because many R users encounter the same data management / data analysis challenges, programmers are able to benefit from the work of others (this is the amazing thing about the open-source community&mdash;people solve problems and then make those solutions available to others!) R packages **do not** ship with the R software by default, and need to be downloaded (once) and loaded into your program each time you wish to use them. While this may seem cumbersome, the R software would be huge and slow if you had to install and load _all_ available packages to use it.
 
-Luckily, it is quite simple to install and load R packages from within R! To do so, you'll need to use the _built-in_ R functions `install.packages` and `library`. Here's an example of installing and loading the `stringr` package.
+Luckily, it is quite simple to install and load R packages from within R! To do so, you'll need to use the _built-in_ R functions `install.packages` and `library`. Here's an example of installing and loading the `stringr` package (which contains more handy functions for working with character strings):
 
 ```r
-# Download/install the `stringr` package. Only needs to be done once on your machine
+# Install the `stringr` package. Only needs to be done once on your machine
 install.packages("stringr")
-library(stringr)
+
+# Load the package (tell R functions are available for use)
+library("stringr") # quotes optional here
 ```
 
-When you load a package, you may receive a warning message about the package being built under a previous version of R. In all likelihood, this shouldn't cause a problem, but you should pay attention to the details of the messages, and keep them in mind (especially if you start getting unexpected errors). After loading the package with the `library` function, you have access to functions that were written as part of that package.
+- Note that when you load a package, you may receive a warning message about the package being built under a previous version of R. In all likelihood this shouldn't cause a problem, but you should pay attention to the details of the messages and keep them in mind (especially if you start getting unexpected errors).
+
+After loading the package with the `library` function, you have access to functions that were written as part of that package (see [the documentation](https://cran.r-project.org/web/packages/stringr/stringr.pdf) for a list of functions included with the `stringr` library).
+
 
 ## Writing functions
-Even more exciting than loading other peoples' functions is writing your own. Any time that you have a task that you may repeat throughout a script, it's good practice to write a function to perform that task. This will limit repetition and reduce the likelihood of error.
+Even more exciting than loading other peoples' functions is writing your own. Any time that you have a task that you may repeat throughout a script&mdash;or you simply want to organize your thinking&mdash;it's good practice to write a function to perform that task. This will limit repetition and reduce the likelihood of error... as well as make things easier to read and understand.
 
-Similarly to creating any other variable, you use the assignment operator (`<-`) to store a function in a variable. It's [best practice ](https://google.github.io/styleguide/Rguide.xml#functiondefinition) assign functions names in CamelCase without any periods(`.`) in the name. This helps distinguish functions from other variables. Let's take a look a simple function to understand it's anatomy:
+Functions are named like any othe variable, so we use the _assignment operator_ (**`<-`**) to store a new `function` in a variable. It's [best practice ](https://google.github.io/styleguide/Rguide.xml#functiondefinition) assign functions names in _CamelCase_ without any periods (`.`) in the name. This helps distinguish functions from other variables.
+
+The best way to understand the syntax for defining a function is to look at an example:
 
 ```r
-# Write a function to add two numbers together
-AddNumbers <- function(a, b) {
+# A function named `AddNumbers` that takes two arguments
+# and returns the sum of those arguments
+MakeFullName <- function(first.name, last.name) {
   # Function body: perform tasks in here
-  answer <- a + b
+  full.name <- paste(first.name, last.name)
 
-  # Return statement: what you want the function to output
-  return (answer)
+  # Return: what you want the function to output
+  return(full.name)
 }
 
-# Execute your AddNumbers function with the values 2 and 6
-AddNumbers(3,6)  # 9
+# Call the AddNumbers function with the values 2 and 10
+my.name <- MakeFullName("Alice","Kim")  # "Alice Kim"
 ```
-Let's use the function as an example to better understand function anatomy:
 
->**Arguments**: The values that are put into a function are referred to as **arguments** or **parameters**. When you define a function, you specify the **arguments** that the function accepts within the first set of parentheses (in the case, `a` and `b`). Note, we could have called `a` and `b` by any names we wanted. The important point is that those are the values that are used throughout the internal body of the function.
+Functions have a couple of pieces to them:
 
->**Body**: The body of the function is the block of code that falls between the curly braces (`{  }`). The function body specifies all tasks that your function will perform. Within this section, your arguments (`a` and `b`), will assume the values passed into the function upon execution.
+- **Arguments**: the data assigned to the function variable uses the syntax `function(...)` to indicate that you're creating a function (as opposed to a number or character string). The values put betweeen the parentheses are variables that _will contain_ the values passed in as **arguments**. For example, when we call `MakeFullName("Alice","Kim")`, the value of the first argument (`"Alice"`) will be assigned to the first variable (`first.name`), and the value of the second argument (`"Kim"`) will be assigned to the second variable (`last.name`).
 
-> **Return value**: The last line of your **function body** is your **return value**. In R, functions returns a single value, which you should put in parentheses after the word `return`.
+  Importantly, we could have made the argument names anything we wanted (`name.first`, `given.name`, etc.), just as long as we then use _that variable name_ to refer to the argument while inside the function. Moreover, these argument variable names _only apply_ while inside the function. You can think of them like "nicknames" for the values. The variables `first.name`, `last.name`, and `full.name` only exist within this particular function.
 
-To execute the function, we simply passed in two **arguments**: `3` and `6`. R then executes each line in the **function body**, replacing the **arguments** (`a` and `b`) with the values that were put into the function (`3` and `6`). Finally, R will output the **return value** at the end of the function.
+- **Body**: The body of the function is a **block** of code that falls between curly braces **`{}`** (curly braces are called a "block"). Note that cleanest style is to put the opening `{` immediately after the arguments list, and the closing `}` on its own line.
+
+  The function body specifies all the instructions (lines of code) that your function will perform. A function can contain as many lines of code as you want&mdash;you'll usually want more than 1 to make it worth while, but if you have more than 20 you might want to break it up into separate functions. You can use the argument variables in here, create new variables, call other functions... basically any code that you would write outside of a function can be written inside of one as well!
+
+- **Return value**: You can specify what output a function produces by calling the `return()` function and passing that the value that you wish _your function_ to return (output). The `return()` function will execute instructions that end the current function and _return_ the flow of code execution to whereever this function was called from. Note that even though we returned a variable called `full.name`, that variable was _local_ to the function and so doesn't exist outside of it; thus we have to take the returned value and assign it to a new variable (as with `name <- MakeFullName("Alice","Kim")`).
+
+  Because the `return()` call exits the function, it is usually the last line of code in the function.
+
+We can call (execute) a function we defined the same way we called built-in functions. When we do so, R will take the **arguments** we passed in (e.g., `"Alice"` and `"Kim"`) and assign them to the _argument variables_. Then it execute each line of code in the **function body** one at a time. When it gets to the `return()` call, it will end the function and return the given value, which can then be assigned to a different variable.
 
 For practice writing basic functions, see [exercise-1](exercise-1).
 
+
 ## Conditional Statements
-In R, as in other programming languages, you often want to take different actions given a set of conditions. Conditional statements allow us to isolate chunks of code to execution given different contexts, which is often valuable within functions. In an abstract sense, an conditional statement is saying:
+Functions are a way to organize and control the flow of execution (e.g., what lines of code get run in what order). In R, as in other languages, we have one other way of controlling program flow, and that is by specifying different instructions that can be run based on a different set of conditions. **Conditional statements** allow us to specify different chunks of code to run when given different contexts, which is often valuable within functions.
+
+In an abstract sense, an conditional statement is saying:
 
 ```
-if(SOMETHING IS TRUE) {
-  # DO EVERYTHING IN HERE
-} else {
-  # OTHERWISE, DO EVERYTHING IN HERE
-}
+IF something is true
+  do some lines of code
+OTHERWISE
+  do some other lines of code
 ```
-In order to execute a conditional statement, the value inside of the `if()` parentheses must return a **boolean** value (or must resolve to a boolean value). Note, you can provide multiple different conditions if you use the `elseif()` syntax throughout this process:
 
-```
-if(SOMETHING IS TRUE) {
-  # DO EVERYTHING IN HERE
-} elseif(SOMETHING ELSE IS TRUE) {
-  # DO EVERYTHING IN HERE
+In R, we write these conditional statements using the keywords **`if`** and **`else`** and the following syntax:
+
+```r
+if(condition){
+  # lines of code to run if condition is TRUE
 } else {
-  # BY DEFAULT, DO EVERYTHING IN HERE
+  # lines of code to run if condition is FALSE
 }
 ```
-For practice writing conditional statements in functions, see [exercise-2](exercise-2). Note, you'll need to be familiar with some of the concepts from [module-7](https://github.com/INFO-201/m7-vectors).
+
+(Note that the the `else` needs to be on the same line as the closing `}` of the `if` block. It is also possible to omit the `else` and its block).
+
+The `condition` can be any variable or expression that resolves to a logical value (`TRUE` or `FALSE`). Thus both of the below conditional statements are valid:
+
+```r
+porridge.temp <- 115  # in degrees F
+if(porridge.temp > 120) {
+  print("This porridge is too hot!")
+}
+
+too.cold <- porridge.temp < 70
+if(too.cold) {  # a logical value
+  print("This porridge is too cold!")
+}
+```
+
+For practice writing conditional statements in functions, see [exercise-2](exercise-2).
