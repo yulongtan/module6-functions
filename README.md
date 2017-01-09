@@ -105,8 +105,8 @@ Functions are named like any othe variable, so we use the _assignment operator_ 
 The best way to understand the syntax for defining a function is to look at an example:
 
 ```r
-# A function named `AddNumbers` that takes two arguments
-# and returns the sum of those arguments
+# A function named `MakeFullName` that takes two arguments
+# and returns the "full name" made from them
 MakeFullName <- function(first.name, last.name) {
   # Function body: perform tasks in here
   full.name <- paste(first.name, last.name)
@@ -115,7 +115,7 @@ MakeFullName <- function(first.name, last.name) {
   return(full.name)
 }
 
-# Call the AddNumbers function with the values 2 and 10
+# Call the MakeFullName function with the values "Alice" and "Kim"
 my.name <- MakeFullName("Alice","Kim")  # "Alice Kim"
 ```
 
